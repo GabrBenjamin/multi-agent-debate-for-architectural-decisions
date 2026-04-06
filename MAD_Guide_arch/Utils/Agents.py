@@ -42,9 +42,9 @@ class Agent(BaseModel):
         """
         # Ensure system message is included
         if self.llm_name == 'codeqwen':
-             llm = ChatTogether(model="Qwen/Qwen2.5-Coder-32B-Instruct", temperature=0, together_api_key="tgp_v1_aqHyWMX89C-z87wblS5K-R1MzQPKsPPIS5M0ofj5C9o")
+             llm = ChatTogether(model="Qwen/Qwen2.5-Coder-32B-Instruct", temperature=0, together_api_key="")
         elif self.llm_name == 'deepseek':
-             llm = ChatTogether(model="deepseek-ai/DeepSeek-V3", temperature=0, together_api_key="tgp_v1_aqHyWMX89C-z87wblS5K-R1MzQPKsPPIS5M0ofj5C9o")
+             llm = ChatTogether(model="deepseek-ai/DeepSeek-V3", temperature=0, together_api_key="")
         else:
              llm = ChatOpenAI(model=self.llm_name, temperature=0)
         prompt_messages = [self.system_message] if self.system_message else []
