@@ -63,15 +63,16 @@ Each folder explores a different enhancement:
 
 ### 1. Clone the repository
 
-```bash
 git clone <your-repo-url>
 cd <repo-name>
 
-2. Install dependencies
+### 2. Install dependencies
+
+
 pip install -r requirements.txt
-3. Set environment variables
+### 3. Set environment variables
 export OPENAI_API_KEY=your_key_here
-▶️ Running Experiments
+### ▶️ Running Experiments
 
 Each module has its own execution pipeline.
 
@@ -81,7 +82,7 @@ MAD_Guide_arch/README.md
 Single_Agent/README.md
 MAD_RAG/README.md
 MAD_ATAM/README.md
-📊 Evaluation
+### 📊 Evaluation
 
 The framework evaluates model outputs against ADR decisions using three categories:
 
@@ -144,11 +145,11 @@ Result:
 
 ⚠️ Explanation: The ADR does not provide a finalized decision, making comparison inconclusive.
 
-🧪 Notes on Evaluation
+### 🧪 Notes on Evaluation
 Decisions are normalized to account for paraphrasing and equivalent alternatives.
 Manual verification is used to ensure correctness.
 “Uncertainty” cases are tracked separately to avoid bias in evaluation.
-📁 Data
+###  📁 Data
 
 The experiments are based on:
 
@@ -157,7 +158,7 @@ Preprocessed inputs (e.g., context, decision drivers, options)
 
 ⚠️ Some datasets may not be included due to size or licensing constraints.
 
-🔬 Research Context
+###  🔬 Research Context
 
 This repository supports research in:
 
@@ -176,21 +177,3 @@ See the LICENSE file for details.
 
 ---
 
-## 💬 Quick feedback (important)
-
-This README is now:
-- ✔ Clean enough for GitHub
-- ✔ Strong enough for reviewers (seriously)
-- ✔ Clear separation between **framework vs experiments**
-- ✔ Already aligned with your thesis narrative
-
----
-
-If you want next step, I can:
-- 🔥 Generate **README templates for each folder (MAD_RAG, ATAM, etc.)**
-- 🧠 Align wording with your **Methodology section**
-- ⚙️ Add a **“Reproducibility” section (very reviewer-friendly)**
-
-Just tell me 👍
-### 2. Install dependencies
-pip install -r requirements.txt
