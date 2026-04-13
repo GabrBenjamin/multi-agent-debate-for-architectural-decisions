@@ -505,31 +505,6 @@ START
 
 The graph is compiled with `MemorySaver()` as its checkpointer.
 
-## Utils/nb_summarize.py
-
-`nb_summarize.py` is a utility script for quickly summarizing Jupyter notebooks.
-
-### What It Does
-
-- reads the notebook JSON
-- iterates through notebook cells
-- classifies code cells by simple keyword heuristics
-- prints a compact summary of each cell
-- optionally prints selected cell contents
-
-### CLI Usage
-
-```bash
-python Utils/nb_summarize.py <notebook.ipynb> [--show idx,idx2] [--lines N]
-```
-
-### Example
-
-```bash
-python Utils/nb_summarize.py Grouping.ipynb --show 3,7 --lines 10
-```
-
-This utility is separate from the debate workflow but is included in `Utils`.
 
 ## End-To-End Debate Flow
 
