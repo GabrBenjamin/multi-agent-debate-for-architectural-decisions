@@ -532,16 +532,13 @@ At runtime, a typical debate proceeds like this:
 - final state values returned by the LangGraph invocation
 - `debate_BIG_GPT.csv` for batch execution in `Run_all.py`
 
-## Known Limitations And Risks
+### 🎭 Adding Role-Based Agents
 
-The current code works as a prototype, but there are several implementation constraints worth documenting:
+The framework can be easily extended to simulate different stakeholder perspectives by modifying the agent prompts.
 
-- `Run_all.py` uses a hard-coded absolute input CSV path.
-- `Main.py` and `Run_all.py` do not expose command-line arguments.
-- The moderator and judge rely on the model returning perfectly valid JSON.
-- The remote Llama connection is hard-coded in `Utils/LLM.py`.
-- `Main.py` and `Run_all.py` use different model backends, so results are not directly comparable unless that is intentional.
-- The debate prompts and stopping logic are fixed in code rather than externally configured.
+To enable role-based behavior, simply include role instructions directly in the prompt (e.g., “You are a Software Architect focusing on maintainability” or “You are an SRE prioritizing reliability”).
+
+No changes to the core logic are required—only the prompt configuration needs to be adapted.
 
 ## Minimal Quick Start
 
