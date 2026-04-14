@@ -18,10 +18,9 @@ The objective is to assess whether LLM-based approaches can **replicate or appro
 ├── MAD_ATAM/ # MAD with ATAM-style scenario generation (planned)
 ├── MAD_RAG/ # MAD with retrieval-augmented generation (planned)
 ├── MAD_More_agents/ # Experiments with different agent configurations
-├── MAD_roles/ # Role-based agents (e.g., architect, SRE, product)
 ├── Single_Agent/ # Baseline approaches (no debate)
 ├── Post_hoc/ # Post-hoc analysis and evaluation scripts
-├── MAD_Framework_Backup/ # Legacy or backup versions
+├── MAD_Regular+roles/ # Base MAD framework
 ├── README.md # This file
 └── LICENSE
 
