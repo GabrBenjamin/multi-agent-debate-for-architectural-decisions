@@ -41,7 +41,7 @@ class Agent(BaseModel):
         """
         # Ensure system message is included
         if self.llm_name == 'llama':
-             llm = ChatOllama(model='llama3.3', server_url="http://localhost:11434")
+             llm = ChatOllama(model='llama3.3', server_url="http://localhost:xxxx")
         else:
              from langchain_openai import ChatOpenAI
              llm = ChatOpenAI(model=self.llm_name, temperature=0)
