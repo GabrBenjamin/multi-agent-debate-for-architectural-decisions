@@ -10,11 +10,11 @@ import shlex
 # Define the SSHConnection class
 class SSHConnection:
     def __init__(self):
-        self.hostname = '10.27.0.15'
-        self.username = 'felipe'
-        self.password = 'hu9e2on32093d0j929cu0id2'
-        self.local_port = 11434  
-        self.remote_port = 11434
+        self.hostname = 'xxxxx'
+        self.username = 'xxxxx'
+        self.password = 'xxxx'
+        self.local_port = xxxxx  
+        self.remote_port = xxxx
         self.ssh = paramiko.SSHClient()
         self.channel = None
         
