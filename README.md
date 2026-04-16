@@ -16,10 +16,10 @@ The objective is to assess whether LLM-based approaches can **replicate or appro
 ## 🏗️ Repository Structure
 
 ```
-.
+
 ├── MAD_Guide_arch/        # MAD with GuideArch-inspired reasoning
-├── MAD_ATAM/             # MAD with ATAM-style scenario generation (planned)
-├── MAD_RAG/              # MAD with retrieval-augmented generation (planned)
+├── MAD_ATAM/             # MAD with ATAM-style scenario generation (
+├── MAD_RAG/              # MAD with retrieval-augmented generation 
 ├── MAD_More_agents/      # Experiments with different agent configurations
 ├── Single_Agent/         # Baseline approaches (no debate)
 ├── Post_hoc/             # Post-hoc analysis and evaluation scripts
