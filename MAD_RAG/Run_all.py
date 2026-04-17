@@ -6,8 +6,8 @@ from Utils.State_graph import build_state_graph
 from langchain_openai import ChatOpenAI
 import pandas as pd
 
-# Set OpenAI API key for this process
-os.environ["OPENAI_API_KEY"] = "REDACTED_API_KEY"
+# OpenAI API key should be set via environment variable
+# export OPENAI_API_KEY=your_key_here
 
 #set_env("OPENAI_API_KEY")
 

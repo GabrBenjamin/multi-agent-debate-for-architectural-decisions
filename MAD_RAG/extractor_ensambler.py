@@ -25,8 +25,8 @@ import pandas as pd
 from debate_manager import *
 from datetime import datetime
 
-# Set OpenAI API key for this process
-os.environ["OPENAI_API_KEY"] = "REDACTED_API_KEY"
+# OpenAI API key should be set via environment variable
+# export OPENAI_API_KEY=your_key_here
 
 sys.setrecursionlimit(2000)
 

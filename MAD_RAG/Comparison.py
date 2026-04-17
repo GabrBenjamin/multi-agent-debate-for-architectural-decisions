@@ -10,8 +10,8 @@ from langchain_community.chat_models import ChatOpenAI
 
 
 
-# Set OpenAI API key for this process
-os.environ["OPENAI_API_KEY"] = "REDACTED_API_KEY"
+# OpenAI API key should be set via environment variable
+# export OPENAI_API_KEY=your_key_here
 
 # ========= 2. LOAD YOUR DATA =========
 df = pd.read_csv(r'ATAM_debateGLGL.csv')  # <-- change to your actual CSV path
