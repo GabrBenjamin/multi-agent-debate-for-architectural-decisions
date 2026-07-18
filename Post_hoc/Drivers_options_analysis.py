@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import patsy as pt
 import statsmodels.api as sm
+from pathlib import Path
 
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler
@@ -15,8 +16,10 @@ from sklearn.metrics import log_loss, f1_score, brier_score_loss
 # CONFIG
 # =========================================================
 
-INPUT_CSV = "Final_Grouping2.csv"
-OUTPUT_CSV = "Final_Grouping2_with_counts.csv"
+BASE_DIR = Path(__file__).resolve().parent
+
+INPUT_CSV = BASE_DIR / "Final_Grouping2.csv"
+OUTPUT_CSV = BASE_DIR / "Final_Grouping2_with_counts.csv"
 
 
 # =========================================================

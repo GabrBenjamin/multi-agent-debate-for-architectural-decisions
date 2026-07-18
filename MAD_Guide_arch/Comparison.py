@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from Utils.Env import set_env
+from pathlib import Path
 
 # ------- LangChain imports -------
 from langchain_community.llms import OpenAI
@@ -13,8 +14,10 @@ from langchain_community.chat_models import ChatOpenAI
 
 set_env("OPENAI_API_KEY")
 
+BASE_DIR = Path(__file__).resolve().parent
+
 # ========= 2. LOAD YOUR DATA =========
-df = pd.read_csv('debate_guideArchS_cleaned_scored.csv')
+df = pd.read_csv(BASE_DIR / "debate_guideArchS_cleaned_scored.csv")
 # Make sure it has columns 'human_decision' and 'winner'.
 
 # ========= 3. CREATE A LANGCHAIN PROMPT =========
@@ -69,7 +72,7 @@ for idx, row in df.iterrows():
 df["comparison_result"] = results
 
 # ========= 7. SAVE TO A NEW CSV FILE =========
-output_path = 'winner_vs_human_clean_comparison.csv'
+output_path = BASE_DIR / "winner_vs_human_clean_comparison.csv"
 df.to_csv(output_path, index=False)
 
 print("Done. The results have been saved to:", output_path)

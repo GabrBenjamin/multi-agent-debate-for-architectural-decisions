@@ -8,9 +8,12 @@ import os
 import subprocess
 import pandas as pd
 from database import Database
+from pathlib import Path
 
 # OpenAI API key should be set via environment variable
 # export OPENAI_API_KEY=your_key_here
+
+BASE_DIR = Path(__file__).resolve().parent
 
 def test_repository_access(github_address, timeout=30):
     """Test if a repository is accessible"""
@@ -29,8 +32,8 @@ def test_repository_access(github_address, timeout=30):
 
 def main():
     # Connect to the database
-    db_path = os.path.join(os.getcwd(), 'main_dataset.db')
-    db = Database(db_path)
+    db_path = BASE_DIR / "main_dataset.db"
+    db = Database(str(db_path))
     
     # Get the progress table
     df = db.to_df('progress')

@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from Utils.Env import set_env
+from pathlib import Path
 
 # ------- LangChain imports -------
 from langchain_community.llms import OpenAI
@@ -13,8 +14,29 @@ from langchain_community.chat_models import ChatOpenAI
 
 set_env("OPENAI_API_KEY")
 
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def find_repo_root(start: Path) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return start
+
+
+REPO_ROOT = find_repo_root(BASE_DIR)
+
+
+def resolve_input_path(filename: str) -> Path:
+    candidates = [BASE_DIR / filename, REPO_ROOT / filename]
+    candidates.extend(path for path in sorted(REPO_ROOT.glob(f"**/{filename}")) if path not in candidates)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return BASE_DIR / filename
+
 # ========= 2. LOAD YOUR DATA =========
-df = pd.read_csv(r'debate_results_with_history.csv')  # <-- change to your actual CSV path
+df = pd.read_csv(resolve_input_path("debate_results_with_history.csv"))  # <-- change to your actual CSV path
 # Make sure it has columns 'context_considered_drivers' and 'debate_answer'.
 
 # ========= 3. CREATE A LANGCHAIN PROMPT =========
@@ -68,7 +90,7 @@ for idx, row in df.iterrows():
 df["comparison_result"] = results
 
 # ========= 7. SAVE TO A NEW CSV FILE =========
-output_path = "output_with_comparisons3a.csv"
+output_path = BASE_DIR / "output_with_comparisons3a.csv"
 df.to_csv(output_path, index=False)
 
 print("Done. The results have been saved to:", output_path)

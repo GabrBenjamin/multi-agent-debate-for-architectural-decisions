@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from pathlib import Path
 
 # ------- LangChain imports -------
 from langchain_community.llms import OpenAI
@@ -13,8 +14,29 @@ from langchain_community.chat_models import ChatOpenAI
 # OpenAI API key should be set via environment variable
 # export OPENAI_API_KEY=your_key_here
 
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def find_repo_root(start: Path) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return start
+
+
+REPO_ROOT = find_repo_root(BASE_DIR)
+
+
+def resolve_input_path(filename: str) -> Path:
+    candidates = [BASE_DIR / filename, REPO_ROOT / filename]
+    candidates.extend(path for path in sorted(REPO_ROOT.glob(f"**/{filename}")) if path not in candidates)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return BASE_DIR / filename
+
 # ========= 2. LOAD YOUR DATA =========
-df = pd.read_csv(r'ATAM_debateGLGL.csv')  # <-- change to your actual CSV path
+df = pd.read_csv(resolve_input_path("MAD_rag_results.csv"))  # <-- change to your actual CSV path
 # Make sure it has columns 'human_decision' and 'debate_answer'.
 
 # ========= 3. CREATE A LANGCHAIN PROMPT =========
@@ -68,7 +90,7 @@ for idx, row in df.iterrows():
 df["comparison_result"] = results
 
 # ========= 7. SAVE TO A NEW CSV FILE =========
-output_path = "output_with_comparisonsATAM_GLGL_ALL.csv"
+output_path = BASE_DIR / "MAD_rag_results_with_comparisons.csv"
 df.to_csv(output_path, index=False)
 
 print("Done. The results have been saved to:", output_path)

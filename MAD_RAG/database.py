@@ -26,6 +26,7 @@ import pytz
 from pympler import asizeof
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from pathlib import Path
 
 
 
@@ -34,13 +35,29 @@ from sqlalchemy.orm import sessionmaker
 
 sys.setrecursionlimit(2000)
 
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def find_repo_root(start: Path) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return start
+
+
+REPO_ROOT = find_repo_root(BASE_DIR)
+BACKUP_ROOT = REPO_ROOT / ".local_db_backups"
+
 
 class Database:
     def __init__(self, db_local_path=None):
         try:
-            prefix = "/mnt/my_ssd/research"
-            relative_path = os.path.relpath(db_local_path, start="/home/enio/projects/research")
-            self.hardcoded_path = os.path.join(prefix, relative_path).replace('new_adr_study.db', 'adr_study.db')
+            db_path = Path(db_local_path).resolve()
+            try:
+                relative_path = db_path.relative_to(REPO_ROOT)
+            except ValueError:
+                relative_path = Path(db_path.name)
+            self.hardcoded_path = str((BACKUP_ROOT / relative_path).with_name(db_path.name.replace('new_adr_study.db', 'adr_study.db')))
 
         except Exception as e: 
             print(f'{e}')
@@ -81,8 +98,9 @@ class Database:
                 else:
                     raise  # Re-raise exception if it's a different error
                 
-        if os.path.exists(self.hardcoded_path):
+        if self.hardcoded_path and os.path.exists(self.hardcoded_path):
             if not 'new_' in self.db_local_path.replace('new_adr_study.db', 'adr_study.db'):
+                Path(self.db_local_path.replace('new_adr_study.db', 'adr_study.db')).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(self.hardcoded_path, self.db_local_path.replace('new_adr_study.db', 'adr_study.db'))
                 # print(f"Database copied from {self.hardcoded_path} to {self.db_local_path}.")
                 try:
@@ -155,6 +173,7 @@ class Database:
                 print("Starting backup operation...")
                 backup_path = self.hardcoded_path
                 if self.db_local_path:
+                    Path(backup_path).parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy(self.db_local_path, backup_path)  # Copy the database file
                     print(f"Database backup completed to {backup_path}.")
                     if clean_local:
@@ -350,8 +369,7 @@ class Database:
             self.save()
             
     def sync_dir_with_main(self):
-        base_path = os.path.dirname(self.db_local_path)
-        prefix = "/mnt/my_ssd/research/adrs/datasets/project_repositories"
+        base_path = Path(self.db_local_path).parent
         # print(f'synching from {base_path}')
         table_names = ['commiter_metrics', 'developer_metrics']
         for table in table_names:

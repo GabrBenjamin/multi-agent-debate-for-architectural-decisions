@@ -5,6 +5,29 @@ from Utils.Config import config
 from Utils.State_graph import build_state_graph
 from langchain_openai import ChatOpenAI
 import pandas as pd
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def find_repo_root(start: Path) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return start
+
+
+REPO_ROOT = find_repo_root(BASE_DIR)
+
+
+def resolve_input_path(filename: str) -> Path:
+    candidates = [BASE_DIR / filename, REPO_ROOT / filename]
+    candidates.extend(path for path in sorted(REPO_ROOT.glob(f"**/{filename}")) if path not in candidates)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return REPO_ROOT / filename
 
 # OpenAI API key should be set via environment variable
 # export OPENAI_API_KEY=your_key_here
@@ -60,7 +83,7 @@ def initialize_agents(config, topic):
 
 def main():
     # Read the dataset of topics
-    topics_df = pd.read_csv('sample_with_all_three_extract.csv')  # Ensure this CSV has a column named 'topic'
+    topics_df = pd.read_csv(resolve_input_path("sample_with_all_three_extract.csv"))  # Ensure this CSV has a column named 'topic'
 
     # Prepare a list to collect results
     results = []
@@ -130,7 +153,7 @@ def main():
 
     # Save all results to a CSV file
     results_df = pd.DataFrame(results)
-    results_df.to_csv('MAD_rag_results.csv', index=False)
+    results_df.to_csv(BASE_DIR / "MAD_rag_results.csv", index=False)
 
 
 if __name__ == "__main__":

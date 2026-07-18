@@ -16,6 +16,7 @@ import re
 import json
 import time
 import pandas as pd
+from pathlib import Path
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate as CorePromptTemplate
@@ -33,15 +34,17 @@ except Exception:
 # CONFIG
 # =========================================================
 
-RAW_INPUT_CSV = "debate_BIG_GPT.csv"
-COMPARISON_SOURCE_CSV = "output_with_comparisonsBIG_GPT.csv"
+BASE_DIR = Path(__file__).resolve().parent
 
-STEP1_OUTPUT = "Grouped_decisions.csv"
-STEP2_OUTPUT = "Grouped_decisions_with_comparison.csv"
-STEP3_OUTPUT = "Grouped_decisions_with_comparison_filled.csv"
-STEP4_OUTPUT = "Grouped_decisions_with_concerns_split.csv"
-STEP5_OUTPUT = "Final_Grouping.csv"
-FINAL_OUTPUT = "Final_Grouping2.csv"
+RAW_INPUT_CSV = BASE_DIR / "debate_BIG_GPT.csv"
+COMPARISON_SOURCE_CSV = BASE_DIR / "output_with_comparisonsBIG_GPT.csv"
+
+STEP1_OUTPUT = BASE_DIR / "Grouped_decisions.csv"
+STEP2_OUTPUT = BASE_DIR / "Grouped_decisions_with_comparison.csv"
+STEP3_OUTPUT = BASE_DIR / "Grouped_decisions_with_comparison_filled.csv"
+STEP4_OUTPUT = BASE_DIR / "Grouped_decisions_with_concerns_split.csv"
+STEP5_OUTPUT = BASE_DIR / "Final_Grouping.csv"
+FINAL_OUTPUT = BASE_DIR / "Final_Grouping2.csv"
 
 MODEL_NAME = "gpt-5"
 TEMPERATURE = 0

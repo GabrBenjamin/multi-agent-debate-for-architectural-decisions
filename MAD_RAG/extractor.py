@@ -3,6 +3,7 @@ import os
 from database import Database
 import os
 import pandas as pd
+from pathlib import Path
 
 from git import Repo
 import traceback
@@ -16,28 +17,31 @@ from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from debate_manager import main_debate
 
+BASE_DIR = Path(__file__).resolve().parent
+
+
 class Extractor():
     def __init__(self, github_address, repo_name, commit_hash, ready=False):
         self.offset = 3
         self.repo_name = repo_name.replace('.','').replace('-','')
         self.original_commit_hash = commit_hash
         self.effective_commit_hash = commit_hash
-        self.repo_path = os.path.join(os.getcwd(), 'dataset', self.repo_name+commit_hash[:10])
-        db_path = os.path.join(self.repo_path, 'info.db')
-        self.db = Database(db_path)
-        self.repo_clone_path = os.path.join(self.repo_path, self.repo_name)
+        self.repo_path = BASE_DIR / "dataset" / f"{self.repo_name}{commit_hash[:10]}"
+        db_path = self.repo_path / "info.db"
+        self.db = Database(str(db_path))
+        self.repo_clone_path = self.repo_path / self.repo_name
         self.github_address = github_address
         self.used_head_fallback = False
         self.retriever_info = {
             "collection_name": f"collection_{self.repo_name}",
             "model": "text-embedding-3-large",
-            "persist_directory": os.path.join(self.repo_path, f'{self.repo_name}_chroma_db'),
+            "persist_directory": str(self.repo_path / f"{self.repo_name}_chroma_db"),
         }
         
-        if os.path.exists(self.repo_path) and not ready:
+        if self.repo_path.exists() and not ready:
             shutil.rmtree(self.repo_path)
         
-        if os.path.exists(self.repo_path) and not ready:
+        if self.repo_path.exists() and not ready:
             print(f'ERROR: not erased correctly')
             
         embeddings = OpenAIEmbeddings(model=self.retriever_info["model"])
@@ -121,7 +125,7 @@ class Extractor():
             print(f"Cloning {self.github_address} to {self.repo_clone_path}")
             
             # Ensure the directory exists
-            os.makedirs(os.path.dirname(self.repo_clone_path), exist_ok=True)
+            self.repo_clone_path.parent.mkdir(parents=True, exist_ok=True)
             
             # First, test if the repository is accessible
             import subprocess
@@ -142,9 +146,9 @@ class Extractor():
             # Initialize an empty bare repo and fetch only what's needed (be inclusive across branches/tags)
             try:
                 # git init --bare
-                subprocess.run(['git', 'init', '--bare', self.repo_clone_path], check=True, capture_output=True)
+                subprocess.run(['git', 'init', '--bare', str(self.repo_clone_path)], check=True, capture_output=True)
                 # git remote add origin <url>
-                subprocess.run(['git', '-C', self.repo_clone_path, 'remote', 'add', 'origin', self.github_address], check=True, capture_output=True)
+                subprocess.run(['git', '-C', str(self.repo_clone_path), 'remote', 'add', 'origin', self.github_address], check=True, capture_output=True)
                 
                 # Try to fetch the specific commit with shallow depth and partial objects
                 fetch_specific = subprocess.run([
@@ -182,7 +186,7 @@ class Extractor():
                             if fetch_all.returncode != 0:
                                 raise Exception(f"Git fetch failed: {fetch_specific.stderr or fetch_heads.stderr or fetch_all.stderr}")
                 
-                repo = Repo(self.repo_clone_path)
+                repo = Repo(str(self.repo_clone_path))
                 
                 # Validate the commit exists now; if not, recompute introducer by ADR path if possible, else fall back to HEAD
                 try:

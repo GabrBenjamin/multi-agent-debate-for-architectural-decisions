@@ -24,17 +24,20 @@ from sqlalchemy.sql import select, func, text
 import pandas as pd
 from debate_manager import *
 from datetime import datetime
+from pathlib import Path
 
 # OpenAI API key should be set via environment variable
 # export OPENAI_API_KEY=your_key_here
 
 sys.setrecursionlimit(2000)
 
+BASE_DIR = Path(__file__).resolve().parent
+
 class ExtractorEnsambler():
     def __init__(self):
-        self.default_path = os.getcwd()
-        self.db_path = os.path.join(self.default_path, 'main_dataset.db')
-        self.db = Database(self.db_path)
+        self.default_path = BASE_DIR
+        self.db_path = self.default_path / "main_dataset.db"
+        self.db = Database(str(self.db_path))
         self.create_tables()
         
     def create_tables(self):
@@ -85,7 +88,11 @@ class ExtractorEnsambler():
         self.grab_paths_from_source()
         self.get_adr_hash()
 
-    def grab_paths_from_source(self, source=os.path.join(os.getcwd(), 'data_hash_only.csv')):
+    def grab_paths_from_source(self, source=None):
+        if source is None:
+            source = self.default_path / "data_hash_only.csv"
+        else:
+            source = Path(source)
         df = self.db.to_df('progress')
         
         if 'commit_hash' in df.columns and len(df) > 0: 
@@ -93,7 +100,7 @@ class ExtractorEnsambler():
         else:
             adr_ids = []
             
-        with open(source, mode='r', encoding='utf-8') as csv_file:
+        with source.open(mode='r', encoding='utf-8') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for i, row in enumerate(csv_reader):
                 adr_id = row['hash'] + '_adr_id_' + row['path'] + '_url_' + row['repositoryUrl'] + '_context_' + row['context_considered_drivers']
@@ -126,8 +133,8 @@ class ExtractorEnsambler():
         self.db.save()
     
     def get_adr_hash(self):
-        db_adr_info_path = os.path.join(self.default_path, 'adr_data.db')
-        db_adr_info = Database(db_adr_info_path)
+        db_adr_info_path = self.default_path / "adr_data.db"
+        db_adr_info = Database(str(db_adr_info_path))
         df_adr_info = db_adr_info.to_df('adr_tracking_info')
 
         df = self.db.to_df('progress')
@@ -292,9 +299,9 @@ class ExtractorEnsambler():
                             else:
                                 # Fall back to database query (may fail due to timing/permissions)
                                 effective_hash = result.get('first_commit_hash', '')
-                                db_path = os.path.join(os.getcwd(), 'dataset', repo_name + effective_hash[:10], 'info.db')
-                                if os.path.exists(db_path):
-                                    extractor_db = Database(db_path)
+                                db_path = self.default_path / "dataset" / f"{repo_name}{effective_hash[:10]}" / "info.db"
+                                if db_path.exists():
+                                    extractor_db = Database(str(db_path))
                                     files_df = extractor_db.to_df('files_traversed')
                                     file_counts[repo_name] = len(files_df)
                                 else:

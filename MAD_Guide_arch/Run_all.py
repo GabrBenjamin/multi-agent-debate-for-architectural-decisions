@@ -8,6 +8,30 @@ from Utils.Env import set_env
 import pandas as pd
 from Scorer import compute_best_option
 import json
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def find_repo_root(start: Path) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return start
+
+
+REPO_ROOT = find_repo_root(BASE_DIR)
+
+
+def resolve_input_path(filename: str) -> Path:
+    candidates = [BASE_DIR / filename, REPO_ROOT / filename]
+    candidates.extend(path for path in sorted(REPO_ROOT.glob(f"**/{filename}")) if path not in candidates)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return REPO_ROOT / filename
+
 set_env("OPENAI_API_KEY")
 
 
@@ -79,7 +103,7 @@ def initialize_agents(config_obj, topic):
 # ---------------------------
 def main():
     # Input CSV must have: context_considered_drivers, other_sections
-    df = pd.read_csv('adrs_final_sample_58.csv')
+    df = pd.read_csv(resolve_input_path("adrs_final_sample_58.csv"))
 
     results = []
 
@@ -169,7 +193,7 @@ def main():
             "scoring_json": json.dumps(scoring, ensure_ascii=False),
         })
 
-    pd.DataFrame(results).to_csv('debate_guideArchS_cleaned_scored.csv', index=False)
+    pd.DataFrame(results).to_csv(BASE_DIR / "debate_guideArchS_cleaned_scored.csv", index=False)
     print("Saved to debate_guideArchS_cleaned_scored.csv")
 
 if __name__ == "__main__":

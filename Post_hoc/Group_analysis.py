@@ -3,6 +3,7 @@ import re
 import ast
 import json
 from math import sqrt
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -17,7 +18,9 @@ from sklearn.linear_model import LogisticRegression
 # CONFIG
 # =========================================================
 
-INPUT_CSV = "Final_Grouping2.csv"
+BASE_DIR = Path(__file__).resolve().parent
+
+INPUT_CSV = BASE_DIR / "Final_Grouping2.csv"
 TARGET_ORDER = ["Yes", "No", "Maybe"]
 MULTINOM_ORDER = ["No", "Yes", "Maybe"]   # baseline = No for statsmodels
 MIN_COUNT_PER_LEVEL = 10
