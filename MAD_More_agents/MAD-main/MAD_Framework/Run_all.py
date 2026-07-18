@@ -27,6 +27,17 @@ def resolve_input_path(filename: str) -> Path:
             return candidate
     return REPO_ROOT / filename
 
+
+def resolve_sample_input_path() -> Path:
+    candidates = [
+        BASE_DIR / "sample_with_all_three_extract.csv",
+        REPO_ROOT / "MAD_ATAM" / "sample_with_all_three_extract.csv",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
+
 set_env("OPENAI_API_KEY")
 
 
@@ -85,7 +96,7 @@ def initialize_agents(config, topic):
 
 
 def main():
-    topics_df = pd.read_csv(resolve_input_path("sample_with_all_three_extract.csv"))
+    topics_df = pd.read_csv(resolve_sample_input_path())
 
 
     results = []
