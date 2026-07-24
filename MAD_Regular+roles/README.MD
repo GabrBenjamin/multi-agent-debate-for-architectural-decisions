@@ -108,10 +108,12 @@ Before running the code, check these assumptions:
 
 - `Main.py` assumes the SSH/Ollama configuration in `Utils/LLM.py` is valid.
 - `Run_all.py` assumes an OpenAI API key is available.
-- `Run_all.py` reads a CSV from a hard-coded absolute path:
+- `Run_all.py` reads `sample_with_all_three_extract.csv` using repository-relative resolution:
 
 ```text
-C:/Users/gabri/Downloads/all_three_extract.csv
+MAD_Regular+roles/sample_with_all_three_extract.csv
+or
+MAD_ATAM/sample_with_all_three_extract.csv
 ```
 
 - `Run_all.py` writes results to:
