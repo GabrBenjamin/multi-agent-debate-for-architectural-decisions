@@ -1,22 +1,23 @@
 # MAD GuideArch Debate Pipeline
 
-This module combines a multi-agent debate with GuideArch-style structured
-decision scoring. Debaters discuss an ADR, the moderator or judge produces a
-JSON decision model, and `Scorer.py` ranks the candidate options.
+This module combines a multi-agent debate with GuideArch-style option scoring.
+The debaters discuss an ADR in free text; the moderator or judge then returns a
+strict JSON decision model for `Scorer.py`.
 
 ## Pipeline
 
-`ADR CSV row -> debate -> structured decision JSON -> fuzzy scorer -> winning option`
+`ADR CSV row -> free-text debate -> structured decision JSON -> fuzzy scorer -> winning option`
 
 The debate uses four roles: an affirmative debater, a negative debater, a
 moderator, and a judge. The batch pipeline is the primary entry point.
 
-For each ADR, `Run_all.py` asks the agents to identify decision drivers,
-priorities, option impacts, constraints, and a risk profile. It passes the
-structured debate result through `prepare_struct_for_scoring()` and then to
-`Scorer.compute_best_option()`. The scorer converts qualitative or triangular
-impacts into comparable numeric values, applies priorities and constraints, and
-returns the winning option.
+For each ADR, `Run_all.py` asks the debaters to discuss drivers, option impacts,
+constraints, and risk. The moderator and judge prompts require strict JSON with
+the GuideArch decision model. The graph stores its `final` object in
+`debate_answer`; the runner normalizes it with `prepare_struct_for_scoring()`
+and calls `Scorer.compute_best_option()`. The scorer converts qualitative or
+triangular impacts into comparable numeric values, applies priorities and
+constraints, and returns the winning option.
 
 ## Main Files
 
@@ -52,18 +53,18 @@ The script reads `adrs_final_sample_58.csv`. It expects
 `debate_guideArchS_cleaned_scored.csv`.
 
 The result includes the source topic, human decision, debate metadata,
-structured debate JSON, full scoring JSON, and the scorer-selected winner.
+structured decision JSON, full scoring JSON, and the scorer-selected winner.
 
-`debate_struct_json` stores the structured model created by the debate and
+`debate_struct_json` stores the structured decision model returned by the graph.
 `scoring_json` stores the calculated option scores. `debate_answer` is the
 winner returned by `Scorer.py`; `message_history` keeps the full discussion.
 
-## Structured Output Expected By The Scorer
+## Decision Model Used By The Scorer
 
-The moderator or judge must produce JSON containing drivers, options, impacts,
-constraints, and optional risk flags. Drivers define an orientation and
-priority; impacts may use qualitative labels or triangular fuzzy values. The
-scorer validates constraints and ranks valid options.
+The scorer uses drivers, options, impacts, constraints, and optional risk flags.
+Drivers define an orientation and priority; impacts may use qualitative labels
+or triangular fuzzy values. The scorer validates constraints and ranks valid
+options.
 
 ## Single Debate
 

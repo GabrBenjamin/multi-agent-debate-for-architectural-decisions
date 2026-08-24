@@ -56,6 +56,7 @@ together for each ADR.
 | `debate_manager.py` | Creates the debate agents and invokes the RAG-enabled LangGraph workflow. |
 | `Utils/Nodes.py` | Performs Chroma similarity search and adds retrieved content to debater prompts. |
 | `database.py` | SQLite database helper used for progress and extraction metadata. |
+| `build_adr_tracking_db.py` | Creates the compact RAG tracking database from the original research database. |
 | `test_repos.py` | Optional diagnostic for checking access to pending repository URLs. |
 | `Comparison.py` | Aggregate comparison script for a legacy CSV result file. |
 
@@ -68,8 +69,14 @@ The primary input is `data_hash_only.csv`. Each row supplies:
 - ADR context, decision drivers, and considered options
 - the recorded human decision
 
-`adr_data.db` is also required. It contains ADR tracking information used to
-resolve the first commit associated with each ADR.
+`adr_data_rag_minimal.db` is also required and is included with the RAG module.
+It contains the `adr_tracking_info` table used to resolve the first commit
+associated with each ADR. Startup reads this database even when
+`main_dataset.db` already contains previous extraction or debate results.
+
+`build_adr_tracking_db.py` documents how the compact database is derived. It
+reads a local `adr_data.db` source database and retains only the five tracking
+fields used by this workflow.
 
 The extractor works three commits before that resolved commit. It selects
 documentation-focused files, including ADRs, Markdown documentation, guides,
@@ -111,16 +118,10 @@ This checks a sample of pending repositories in `main_dataset.db` with
 
 `extractor_ensambler.py` first imports `data_hash_only.csv` into the `progress`
 table and resolves the historical commits. To build vector stores from a fresh
-database, enable this line in `main()`:
-
-```python
-EE.extract_data(mode="extract", workers=10)
-```
-
-Run:
+database, run:
 
 ```powershell
-python extractor_ensambler.py
+python extractor_ensambler.py --mode extract
 ```
 
 This clones the eligible repositories, creates the vector stores, and marks
@@ -130,13 +131,20 @@ successful records with `extraction_status = "success"`.
 
 After vector-store extraction succeeds, run:
 
-```python
-EE.extract_data(mode="run_mad", workers=1)
+```powershell
+python extractor_ensambler.py --mode run_mad
 ```
 
-The current `main()` already calls this mode. It selects only successful records
-that do not yet have a saved message history, then writes the RAG debate output
-back to the progress database.
+This selects only successful records that do not yet have a saved message
+history, then writes the RAG debate output back to the progress database. To
+perform both phases in order, run:
+
+```powershell
+python extractor_ensambler.py --mode all
+```
+
+Use `--workers <count>` to choose a worker count. The defaults are 10 workers
+for extraction and 1 worker for debates.
 
 ## Outputs
 

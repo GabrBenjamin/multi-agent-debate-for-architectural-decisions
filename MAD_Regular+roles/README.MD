@@ -45,7 +45,8 @@ python Run_all.py
 ```
 
 The script looks for `sample_with_all_three_extract.csv` in this directory and
-then in `MAD_ATAM/`. The input must contain
+then in the repository's shared dataset location, `MAD_ATAM/`. The same shared
+input is used by the regular, ATAM, and five-agent batch experiments. The input must contain
 `context_considered_drivers`; `other_sections` is saved as the reference human
 decision.
 

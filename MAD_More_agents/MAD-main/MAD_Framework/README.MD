@@ -45,9 +45,19 @@ python Run_all.py
 ```
 
 The script searches for `sample_with_all_three_extract.csv` in this directory,
-then in `MAD_ATAM/`. It requires `context_considered_drivers` and writes
-`debate_results_with_history.csv` with the source context, prompt, selected
-side, final answer, reason, third-debater answer, and full message history.
+then in the repository's shared dataset location, `MAD_ATAM/`. This is the
+same shared input used by the regular and ATAM batch experiments. It requires
+`context_considered_drivers` and writes `debate_results_with_history.csv`.
+
+| Output column | Contents |
+| --- | --- |
+| `context_considered_drivers` | Original ADR context, decision drivers, and options. |
+| `full_prompt` | Complete prompt supplied to the debate. |
+| `supported_side` | Side selected by the workflow. |
+| `debate_answer` | Final model decision. |
+| `reason` | Explanation returned by the workflow. |
+| `third_answ` | Neutral third debater's answer. |
+| `message_history` | Complete five-agent transcript. |
 
 ## Single Example
 

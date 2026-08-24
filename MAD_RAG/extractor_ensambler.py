@@ -1,4 +1,5 @@
 import os
+import argparse
 import json
 import csv
 import asyncio
@@ -133,7 +134,7 @@ class ExtractorEnsambler():
         self.db.save()
     
     def get_adr_hash(self):
-        db_adr_info_path = self.default_path / "adr_data.db"
+        db_adr_info_path = self.default_path / "adr_data_rag_minimal.db"
         db_adr_info = Database(str(db_adr_info_path))
         df_adr_info = db_adr_info.to_df('adr_tracking_info')
 
@@ -383,16 +384,33 @@ class ExtractorEnsambler():
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Build RAG vector stores or run RAG debates."
+    )
+    parser.add_argument(
+        "--mode",
+        choices=("extract", "run_mad", "all"),
+        default="run_mad",
+        help="extract builds vector stores, run_mad runs debates, and all runs both.",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=None,
+        help="Number of concurrent workers. Defaults to 10 for extraction and 1 for debates.",
+    )
+    args = parser.parse_args()
+
     EE = ExtractorEnsambler()
-    EE.get_adr_info()  # Initialize data from CSV
-    
-    # Run full extraction pipeline
-    # print("Starting extraction pipeline...")
-    # EE.extract_data(mode='extract', workers=10)
-    
-    # Temporarily commented out for vectorstore focus
-    print("Starting multi-agent debate (MAD) pipeline...")
-    EE.extract_data(mode='run_mad', workers=1)  # Fewer workers for debate to avoid API rate limits
+    EE.get_adr_info()
+
+    if args.mode in {"extract", "all"}:
+        print("Starting extraction pipeline...")
+        EE.extract_data(mode="extract", workers=args.workers or 10)
+
+    if args.mode in {"run_mad", "all"}:
+        print("Starting multi-agent debate (MAD) pipeline...")
+        EE.extract_data(mode="run_mad", workers=args.workers or 1)
     
 if __name__ == '__main__':
     main()
