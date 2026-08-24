@@ -6,6 +6,10 @@ Decision Record (ADR). The repository is reconstructed at a historical commit,
 indexed in a vector store, and queried during the debate so the agents can use
 project-specific context.
 
+The primary entry point is `extractor_ensambler.py`. It records the extraction
+and debate state for each ADR in `main_dataset.db`, allowing runs to continue
+from the work already stored in the database.
+
 ## What The Pipeline Does
 
 The RAG workflow has two phases:
@@ -39,6 +43,10 @@ The default `continuous` retrieval mode retrieves context for both opening
 statements and before every rebuttal. The moderator and judge evaluate the
 debate output without an additional retrieval step.
 
+The progress database stores the selected side, final decision, reason, and
+full transcript, allowing retrieval artifacts and debate results to be reviewed
+together for each ADR.
+
 ## Main Files
 
 | File | Purpose |
@@ -49,7 +57,7 @@ debate output without an additional retrieval step.
 | `Utils/Nodes.py` | Performs Chroma similarity search and adds retrieved content to debater prompts. |
 | `database.py` | SQLite database helper used for progress and extraction metadata. |
 | `test_repos.py` | Optional diagnostic for checking access to pending repository URLs. |
-| `Comparison.py` | Optional aggregate-review aid for a legacy CSV result file; it does not replace manual review. |
+| `Comparison.py` | Aggregate comparison script for a legacy CSV result file. |
 
 ## Inputs
 
@@ -142,16 +150,4 @@ single CSV file:
 | `dataset/<repository-and-commit>/<repository>_chroma_db/` | Persistent Chroma vector store used for retrieval during debate. |
 
 `Run_all.py` can write `MAD_rag_results.csv`, and `Comparison.py` can write
-`MAD_rag_results_with_comparisons.csv`, but these are not outputs of the primary
-repository-aware RAG workflow.
-
-## Operational Notes
-
-- Extraction is network- and storage-intensive because it clones repositories
-  and generates embeddings.
-- The extractor may fall back to a repository's `HEAD` commit if a historical
-  commit cannot be found; this is recorded in the progress data.
-- Use a low worker count for debate runs to avoid model rate limits. The current
-  main entry point uses one worker for debates.
-- This is experimental research code. Prompts, model names, retrieval mode, and
-  file-selection rules are configured directly in the source.
+`MAD_rag_results_with_comparisons.csv`.

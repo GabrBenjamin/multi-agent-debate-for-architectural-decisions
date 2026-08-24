@@ -4,6 +4,14 @@ This directory transforms experiment results into a grouped ADR dataset and
 then tests relationships between decision characteristics and the outcome
 classification (`Yes`, `No`, or `Maybe`).
 
+## How It Works
+
+`Grouping.py` combines raw debate results and comparison outcomes, extracts or
+normalizes ADR characteristics, and writes progressively enriched CSV files.
+`Group_analysis.py` tests associations between those characteristics and the
+`Yes`/`No`/`Maybe` result. `Drivers_options_analysis.py` counts decision drivers
+and options from ADR Markdown and performs additional analyses.
+
 ## Workflow
 
 Run these scripts in order:
@@ -66,11 +74,3 @@ The grouping stage extracts or normalizes fields such as layer, family,
 decision type, scope, lifecycle stage, ambiguity, risks, and concerns. The
 analysis scripts test their association with the `Yes`/`No`/`Maybe` comparison
 outcome and examine the counts of decision drivers and considered options.
-
-## Limitations
-
-- The grouping pipeline mixes LLM extraction with deterministic heuristics.
-- Results depend on the model, prompt, installed statistics packages, and input
-  row order.
-- Intermediate CSVs are reproducibility artifacts and should be retained when
-  reporting an analysis run.

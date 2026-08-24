@@ -5,6 +5,10 @@ models can reproduce architectural decisions recorded in Architecture Decision
 Records (ADRs). The experiments compare debate-based approaches, structured
 reasoning, single-agent baselines, and post-hoc analysis.
 
+Most experiments are CSV-to-CSV pipelines: they read one ADR per row, generate
+a decision, and save the result with a transcript. The RAG module indexes
+repository documentation in a vector store and saves progress in SQLite.
+
 ## Repository Guide
 
 | Directory | What to expect |
@@ -13,12 +17,29 @@ reasoning, single-agent baselines, and post-hoc analysis.
 | `MAD_ATAM/` | Debate variant that generates ATAM-style scenarios and evaluates options before the debate. |
 | `MAD_Guide_arch/` | Debate pipeline that turns debate output into a structured decision model and scores the options. |
 | `MAD_More_agents/MAD-main/MAD_Framework/` | Five-agent variant with an additional neutral participant. |
-| `MAD_RAG/` | Retrieval-augmented debate experiment. Its documentation is intentionally unchanged while that work continues. |
+| `MAD_RAG/` | Repository-aware retrieval-augmented debate experiment. |
 | `Single_Agent/` | Chain-of-thought and few-shot, non-debate baselines. |
 | `Post_hoc/` | Grouping, comparison, and statistical analysis scripts for generated results. |
 
-Each experiment is independently runnable and has its own dependency file or
-environment requirements. There is no repository-level `requirements.txt`.
+Each experiment has its own dependency and runtime requirements. There is no
+repository-level `requirements.txt`.
+
+## Replication Workflow
+
+1. Change into the experiment directory.
+2. Install dependencies using that module's README.
+3. Set `OPENAI_API_KEY` for an OpenAI-based run.
+4. Confirm the input file and columns described by that README.
+5. Run the batch entry point and inspect the stated output.
+
+For PowerShell:
+
+```powershell
+$env:OPENAI_API_KEY="your-key"
+```
+
+Batch scripts use a local `Env.py` or `Utils/Env.py` helper. It preserves an
+existing environment value or asks for the key at startup.
 
 ## How The Experiments Fit Together
 
@@ -64,13 +85,40 @@ Most batch pipelines expect a CSV with:
 Input discovery varies by module. Some scripts look first in their own folder,
 then search the repository, while others use a fixed local filename.
 
-## Experimental Notes
+## Evaluation Categories
 
-- These scripts are research artifacts, not a production application.
-- Model names, remote endpoints, prompts, and file names are often configured
-  directly in Python files.
-- Generated CSVs, local SQLite databases, caches, and analysis outputs may be
-  large or machine-specific. Review them before committing them to Git.
+The generated decision is compared with the decision documented in the ADR.
+
+### Match
+
+**ADR decision:** choose separate URL creation for logging and error handling.
+
+**Model decision:** separate URL creation into its own method for modularity,
+reusability, and maintainability.
+
+**Classification:** `Yes` - both decisions select the same architectural
+strategy.
+
+### Mismatch
+
+**ADR decision:** build on top of Experimenter and invest in improvements,
+rather than start a new application.
+
+**Model decision:** use existing infrastructure while planning a gradual
+transition to Nimbus.
+
+**Classification:** `No` - the model proposes a different architectural
+strategy from the recorded decision.
+
+### Uncertainty
+
+**ADR decision:** Option 1 is preferred, but further investigation is needed
+before a conclusion.
+
+**Model decision:** choose Option 2 as the pragmatic approach.
+
+**Classification:** `Maybe` - the ADR does not record a final, directly
+comparable decision.
 
 ## License
 

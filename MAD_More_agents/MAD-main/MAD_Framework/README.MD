@@ -10,6 +10,13 @@ For each ADR record, three debaters discuss candidate solutions, a moderator
 evaluates the discussion, and a judge produces the final answer when required.
 The batch output preserves the full debate transcript.
 
+## How It Works
+
+For every ADR, `Run_all.py` creates `AffirmativeSide`, `NegativeSide`, and
+`ThirdPart` with `gpt-4o`. The first two argue opposing positions and the third
+adds a neutral response. `Moderator` evaluates the exchange; `Judge` supplies
+the final answer. `Utils/State_graph.py` coordinates the messages with LangGraph.
+
 ## Main Files
 
 | File | Purpose |
@@ -42,9 +49,6 @@ then in `MAD_ATAM/`. It requires `context_considered_drivers` and writes
 `debate_results_with_history.csv` with the source context, prompt, selected
 side, final answer, reason, third-debater answer, and full message history.
 
-`Comparison.py` is optional aggregate-review assistance and does not replace
-manual review of the experiment results.
-
 ## Single Example
 
 ```powershell
@@ -52,10 +56,3 @@ python Main.py
 ```
 
 `Main.py` and `Run_all.py` both use `gpt-4o` through `ChatOpenAI`.
-
-## Notes
-
-- The batch pipeline uses a maximum of two debate rounds.
-- Prompts, model names, input locations, and output filenames are configured
-  in source files rather than command-line options.
-- Running the batch script makes API calls and may incur costs.
