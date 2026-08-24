@@ -1,24 +1,157 @@
-# MAD_RAG - Multi-Agent Debate with Retrieval-Augmented Generation
+# MAD RAG: Repository-Aware Multi-Agent Debate
 
-## Overview
+This module evaluates architectural decisions with a multi-agent debate that
+retrieves documentation from the repository associated with each Architecture
+Decision Record (ADR). The repository is reconstructed at a historical commit,
+indexed in a vector store, and queried during the debate so the agents can use
+project-specific context.
 
-This module implements the **Multi-Agent Debate (MAD) framework enhanced with Retrieval-Augmented Generation (RAG)** for architectural decision-making evaluation. The RAG component enables agents to retrieve and leverage contextual information from software repositories during the debate process, allowing for more informed and repository-aware architectural decisions.
+## What The Pipeline Does
 
-## Purpose
+The RAG workflow has two phases:
 
-The MAD_RAG variant explores whether augmenting debate agents with repository-specific knowledge improves their ability to replicate architectural decisions documented in Architecture Decision Records (ADRs). By incorporating RAG, agents can access relevant codebase context, historical patterns, and project-specific constraints that may influence architectural choices.
+1. Repository extraction: identify the relevant historical commit, clone the
+   repository, select documentation-oriented files, and create a Chroma vector
+   store using OpenAI embeddings.
+2. RAG debate: retrieve relevant chunks from that vector store while agents
+   debate the ADR decision, then store the final answer and transcript.
 
-## Structure
+The included source dataset contains 291 ADR records. In the current included
+database, 239 records completed extraction and debate; the remaining records
+could not be processed because of unavailable repositories, unresolved commits,
+insufficient history, ADR mapping issues, or extraction errors.
 
-- **Core Components**: Python modules implementing the debate framework, agent logic, and RAG integration
-- **Utilities**: Helper modules for LLM interaction, state management, and configuration
-- **Data Artifacts**: Databases, CSV files, and extracted datasets containing ADR information and experimental results
-- **Execution Scripts**: Tools for running experiments, managing debates, and extracting repository data
+## Debate And Retrieval
 
-## Research Context
+The debate uses four `gpt-4o` roles:
 
-This implementation supports research on:
-- Retrieval-augmented multi-agent systems
-- Context-aware architectural decision-making
-- Repository-informed LLM reasoning
-- Comparative analysis of debate-based vs. retrieval-based approaches
+- `AffirmativeSide`: argues for a proposed decision.
+- `NegativeSide`: challenges that position and offers an alternative.
+- `Moderator`: decides whether a preference is clear after a round.
+- `Judge`: produces the final answer when the debate reaches its round limit.
+
+For each repository, the extractor creates a Chroma vector store using
+`text-embedding-3-large`. During the debate, the affirmative and negative
+agents query that store with their current prompt. The retrieved chunks are
+appended to the prompt as repository context.
+
+The default `continuous` retrieval mode retrieves context for both opening
+statements and before every rebuttal. The moderator and judge evaluate the
+debate output without an additional retrieval step.
+
+## Main Files
+
+| File | Purpose |
+| --- | --- |
+| `extractor_ensambler.py` | Primary RAG workflow coordinator. Seeds the progress database, builds vector stores, and runs RAG debates. |
+| `extractor.py` | Clones repositories at historical commits, selects files, chunks content, and creates Chroma stores. |
+| `debate_manager.py` | Creates the debate agents and invokes the RAG-enabled LangGraph workflow. |
+| `Utils/Nodes.py` | Performs Chroma similarity search and adds retrieved content to debater prompts. |
+| `database.py` | SQLite database helper used for progress and extraction metadata. |
+| `test_repos.py` | Optional diagnostic for checking access to pending repository URLs. |
+| `Comparison.py` | Optional aggregate-review aid for a legacy CSV result file; it does not replace manual review. |
+
+## Inputs
+
+The primary input is `data_hash_only.csv`. Each row supplies:
+
+- the GitHub repository URL
+- ADR path and commit hash
+- ADR context, decision drivers, and considered options
+- the recorded human decision
+
+`adr_data.db` is also required. It contains ADR tracking information used to
+resolve the first commit associated with each ADR.
+
+The extractor works three commits before that resolved commit. It selects
+documentation-focused files, including ADRs, Markdown documentation, guides,
+changelogs, and related text files. It does not currently index arbitrary
+application source files.
+
+## Setup
+
+Install the dependencies in this directory:
+
+```powershell
+pip install -r requirements.txt
+```
+
+The workflow requires an OpenAI API key for `text-embedding-3-large` and
+`gpt-4o`, as well as network access and Git access to the repositories in the
+input data.
+
+```powershell
+$env:OPENAI_API_KEY="your-key"
+```
+
+## Run The RAG Workflow
+
+Use `extractor_ensambler.py` for the actual RAG pipeline. Do not use
+`Run_all.py` as the primary RAG command: it is a separate legacy batch path and
+does not initialize the retriever state required by the RAG graph.
+
+### 1. Optional Repository Check
+
+```powershell
+python test_repos.py
+```
+
+This checks a sample of pending repositories in `main_dataset.db` with
+`git ls-remote`.
+
+### 2. Build Vector Stores
+
+`extractor_ensambler.py` first imports `data_hash_only.csv` into the `progress`
+table and resolves the historical commits. To build vector stores from a fresh
+database, enable this line in `main()`:
+
+```python
+EE.extract_data(mode="extract", workers=10)
+```
+
+Run:
+
+```powershell
+python extractor_ensambler.py
+```
+
+This clones the eligible repositories, creates the vector stores, and marks
+successful records with `extraction_status = "success"`.
+
+### 3. Run RAG Debates
+
+After vector-store extraction succeeds, run:
+
+```python
+EE.extract_data(mode="run_mad", workers=1)
+```
+
+The current `main()` already calls this mode. It selects only successful records
+that do not yet have a saved message history, then writes the RAG debate output
+back to the progress database.
+
+## Outputs
+
+The primary outputs are database and local retrieval artifacts rather than a
+single CSV file:
+
+| Output | Contents |
+| --- | --- |
+| `main_dataset.db` | The `progress` table: source ADR metadata, extraction status, resolved commit, final answer, reason, message history, embedding model, and file count. |
+| `dataset/<repository-and-commit>/info.db` | Per-repository file traversal metadata and vector-store test records. |
+| `dataset/<repository-and-commit>/<repository>_chroma_db/` | Persistent Chroma vector store used for retrieval during debate. |
+
+`Run_all.py` can write `MAD_rag_results.csv`, and `Comparison.py` can write
+`MAD_rag_results_with_comparisons.csv`, but these are not outputs of the primary
+repository-aware RAG workflow.
+
+## Operational Notes
+
+- Extraction is network- and storage-intensive because it clones repositories
+  and generates embeddings.
+- The extractor may fall back to a repository's `HEAD` commit if a historical
+  commit cannot be found; this is recorded in the progress data.
+- Use a low worker count for debate runs to avoid model rate limits. The current
+  main entry point uses one worker for debates.
+- This is experimental research code. Prompts, model names, retrieval mode, and
+  file-selection rules are configured directly in the source.

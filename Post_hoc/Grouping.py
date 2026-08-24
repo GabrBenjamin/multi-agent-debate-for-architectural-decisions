@@ -23,11 +23,9 @@ from langchain_core.prompts import PromptTemplate as CorePromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import PromptTemplate
 
-try:
-    from Utils.Env import set_env
-    set_env("OPENAI_API_KEY")
-except Exception:
-    pass
+from Env import set_env
+
+set_env("OPENAI_API_KEY")
 
 
 # =========================================================

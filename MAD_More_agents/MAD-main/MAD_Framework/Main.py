@@ -15,10 +15,10 @@ set_env("OPENAI_API_KEY")
 # Initialize agents
 def initialize_agents(config):
     #agent_models = {
-        #"AffirmativeSide": "gpt-3.5-turbo",
-        #"NegativeSide": "gpt-3.5-turbo",
-        #"Moderator": "gpt-4",
-        #"Judge": "gpt-3.5-turbo"
+        #"AffirmativeSide": "gpt-4o",
+        #"NegativeSide": "gpt-4o",
+        #"Moderator": "gpt-4o",
+        #"Judge": "gpt-4o"
     #}
     Agent.agents_registry.clear()
     topic = config['debate_topic']
@@ -27,7 +27,7 @@ def initialize_agents(config):
     positive_debater = Debater(
         name="AffirmativeSide",
         role="debater",
-        llm_name="gpt-3.5-turbo",
+        llm_name="gpt-4o",
         stance="Affirmative",
         description="Supports the argument."
     )
@@ -35,7 +35,7 @@ def initialize_agents(config):
     negative_debater = Debater(
         name="NegativeSide",
         role="debater",
-        llm_name="gpt-3.5-turbo",
+        llm_name="gpt-4o",
         stance="Negative",
         description="Opposes the argument."
     )
@@ -43,7 +43,7 @@ def initialize_agents(config):
     third_part = Debater(
         name="ThirdPart",
         role="debater",
-        llm_name="gpt-3.5-turbo",
+        llm_name="gpt-4o",
         stance="neutral",
         description="Offer new point of view."
     )
@@ -52,14 +52,14 @@ def initialize_agents(config):
     moderator = Moderator(
         name="Moderator",
         role="moderator",
-        llm_name="gpt-3.5-turbo",
+        llm_name="gpt-4o",
         description="Oversees the debate, ensures rules are followed, and evaluates progress."
     )
 
     judge = Judge(
         name="Judge",
         role="judge",
-        llm_name="gpt-3.5-turbo",
+        llm_name="gpt-4o",
         description="Provides the final verdict based on the arguments presented."
     )
 
