@@ -63,33 +63,27 @@ K_EX       = 3          # number of random exemplars
 RAND_SEED  = 42
 
 random.seed(RAND_SEED)
-df = pd.read_csv(INPUT_CSV)  # needs context_considered_drivers and original_content
+df = pd.read_csv(INPUT_CSV)  # needs columns: context_considered_drivers, other_sections
 if "context_considered_drivers" not in df.columns:
     raise ValueError("CSV must contain 'context_considered_drivers' column.")
-if "original_content" not in df.columns:
-    raise ValueError("CSV must contain 'original_content' column.")
+if "other_sections" not in df.columns:
+    df["other_sections"] = ""
+
 llm = ChatOpenAI(model="gpt-4o", temperature=0.0)
 
-def normalize_adr(value):
-    if pd.isna(value):
-        return ""
-    return " ".join(str(value).split())
-
-
-def build_fewshot_prompt(df, idx, k, target_blob, target_adr):
+def build_fewshot_prompt(df, idx, k, target_blob):
     n = len(df)
-    pool = [
-        i
-        for i in range(n)
-        if i != idx and normalize_adr(df.at[i, "original_content"]) != target_adr
-    ]
+    pool = [i for i in range(n) if i != idx]
     ex_ids = random.sample(pool, min(k, len(pool))) if pool else []
 
     parts = []
-    # Use full ADRs as exemplars, excluding the target ADR and duplicate copies.
+    # Each exemplar: original prompt line, then its completion on the next line
     for j in ex_ids:
-        ex_in = str(df.at[j, "original_content"])
-        parts.append(f" Select the best option for the following:: {ex_in}\n\n")
+        ex_in = str(df.at[j, "context_considered_drivers"])
+        ex_out = str(df.at[j, "other_sections"]) if not pd.isna(df.at[j, "other_sections"]) else ""
+        ex_out = ex_out.strip().splitlines()[0] if ex_out else "Selected option"
+
+        parts.append(f" Select the best option for the following:: {ex_in}\n{ex_out}\n\n")
 
     # Target: EXACT original prompt (no extra wording)
     parts.append(f" Select the best option for the following:: {target_blob}")
@@ -98,8 +92,7 @@ def build_fewshot_prompt(df, idx, k, target_blob, target_adr):
 results = []
 for idx, row in df.iterrows():
     target_blob = str(row["context_considered_drivers"])
-    target_adr = normalize_adr(row["original_content"])
-    prompt = build_fewshot_prompt(df, idx, K_EX, target_blob, target_adr)
+    prompt = build_fewshot_prompt(df, idx, K_EX, target_blob)
 
     resposta = llm.invoke(prompt)
     content = getattr(resposta, "content", str(resposta))
