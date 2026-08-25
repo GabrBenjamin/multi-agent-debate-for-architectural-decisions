@@ -30,17 +30,22 @@ evaluates the exchange; `Judge` supplies the final answer.
 
 ## Setup
 
-This folder does not contain its own dependency file. Install the compatible
-LangChain, LangGraph, pandas, and OpenAI dependencies used by the sibling
-debate modules, then provide an API key before running either entry point:
+Use Python 3.11 or 3.12. Install the dependencies in `Requirements.txt`, then
+provide an API key before running either entry point.
 
 ```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r Requirements.txt
 $env:OPENAI_API_KEY="your-key"
 ```
 
 On Linux and macOS:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r Requirements.txt
 export OPENAI_API_KEY="your-key"
 ```
 

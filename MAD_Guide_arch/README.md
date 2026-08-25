@@ -31,6 +31,8 @@ constraints, and returns the winning option.
 
 ## Setup
 
+Use Python 3.11 or 3.12 for the pinned study dependencies.
+
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1

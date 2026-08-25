@@ -117,6 +117,8 @@ application source files.
 
 ## Setup
 
+Use Python 3.11 or 3.12 for the pinned study dependencies.
+
 On Windows PowerShell, create an environment and install the dependencies in
 this directory:
 

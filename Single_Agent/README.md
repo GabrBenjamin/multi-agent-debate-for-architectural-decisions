@@ -22,6 +22,8 @@ decision for comparison with the human decision.
 
 ## Setup
 
+Use Python 3.11 or 3.12 for the pinned study dependencies.
+
 Install the dependencies listed in `Requirements.txt`, then provide an OpenAI
 API key:
 

@@ -60,7 +60,8 @@ the directory you plan to run before starting it.
 
 ## Prerequisites
 
-- Python 3.11 or later is recommended.
+- Use Python 3.11 or 3.12. Python 3.14 is not supported by the pinned study
+  dependencies.
 - Create a virtual environment for the module you intend to run.
 - Install that module's dependency file, for example:
 

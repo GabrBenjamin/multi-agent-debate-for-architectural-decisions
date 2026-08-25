@@ -24,6 +24,8 @@ The local client's `server_url` is configured in `Run_all.py`.
 
 ## Setup
 
+Use Python 3.11 or 3.12 for the pinned study dependencies.
+
 Install the local dependencies:
 
 ```powershell

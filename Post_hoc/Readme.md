@@ -37,14 +37,17 @@ independently before running the pipeline.
 
 ## Setup
 
-The analysis scripts use pandas, NumPy, SciPy, scikit-learn, statsmodels, and
-Patsy. `Grouping.py` also uses OpenAI through LangChain for metadata extraction
-and backfilling.
+Use Python 3.11 or 3.12. The analysis dependencies, including pandas, NumPy,
+SciPy, scikit-learn, statsmodels, Patsy, and LangChain, are listed in
+`Requirements.txt`.
 
-Create an environment with the required packages, then set an API key before
-running `Grouping.py`:
+On Windows PowerShell, create an environment, install the dependencies, and set
+an API key before running `Grouping.py`:
 
 ```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r Requirements.txt
 $env:OPENAI_API_KEY="your-key"
 python Grouping.py
 ```
@@ -52,6 +55,9 @@ python Grouping.py
 On Linux and macOS:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r Requirements.txt
 export OPENAI_API_KEY="your-key"
 python3 Grouping.py
 ```
