@@ -1,9 +1,7 @@
-# Multi-Agent Debate Framework
+# More-Debater Debate Framework
 
-This experiment extends the regular debate with a fifth participant: a third
-debater that challenges assumptions and introduces a distinct perspective. It
-is located below `MAD_More_agents/MAD-main/` and has its own copy of the debate
-framework.
+This experiment extends the regular debate with a third debater that challenges
+assumptions and introduces a distinct perspective.
 
 ## Pipeline
 
@@ -24,9 +22,11 @@ evaluates the exchange; `Judge` supplies the final answer.
 | File | Purpose |
 | --- | --- |
 | `Run_all.py` | Batch entry point using `gpt-4o` for the three debaters, moderator, and judge. |
-| `Main.py` | Runs one hard-coded five-agent debate using `gpt-4o`. |
+| `Main.py` | Runs one hard-coded three-debater debate using `gpt-4o`. |
+| `Comparison.py` | Adds an aggregate comparison result to the batch output. |
 | `Utils/` | Agent abstractions, prompts, nodes, environment helper, and LangGraph workflow. |
 | `debate_results_with_history.csv` | Example or generated batch result file. |
+| `output_with_comparisons3a.csv` | Published comparison result file. |
 
 ## Setup
 
@@ -59,7 +59,10 @@ same shared input used by the regular and ATAM batch experiments. It requires
 | `debate_answer` | Final model decision. |
 | `reason` | Explanation returned by the workflow. |
 | `third_answ` | Third debater's challenger perspective. |
-| `message_history` | Complete five-agent transcript. |
+| `message_history` | Complete debate transcript. |
+
+`Comparison.py` reads `debate_results_with_history.csv` and writes
+`output_with_comparisons3a.csv`, adding the `comparison_result` column.
 
 ## Single Example
 

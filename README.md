@@ -16,7 +16,7 @@ repository documentation in a vector store and saves progress in SQLite.
 | `MAD_Regular+roles/` | Baseline four-agent debate: affirmative, negative, moderator, and judge. |
 | `MAD_ATAM/` | Debate variant that generates ATAM-style scenarios and evaluates options before the debate. |
 | `MAD_Guide_arch/` | Debate pipeline that turns debate output into a structured decision model and scores the options. |
-| `MAD_More_agents/MAD-main/MAD_Framework/` | Five-agent variant with an additional neutral participant. |
+| `MAD_More_agents/` | Three-debater variant: affirmative, negative, and challenger, supported by a moderator and judge. |
 | `MAD_RAG/` | Repository-aware retrieval-augmented debate experiment. |
 | `Single_Agent/` | Plain GPT, chain-of-thought, and few-shot non-debate baselines. |
 | `Post_hoc/` | Grouping, comparison, and statistical analysis scripts for generated results. |
