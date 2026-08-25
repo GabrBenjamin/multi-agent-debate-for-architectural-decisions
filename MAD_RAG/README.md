@@ -10,6 +10,38 @@ The primary entry point is `extractor_ensambler.py`. It records the extraction
 and debate state for each ADR in `main_dataset.db`, allowing runs to continue
 from the work already stored in the database.
 
+## Retrieval Configurations
+
+The packaged RAG workflow indexes documentation-oriented repository files,
+including ADRs, READMEs, `CONTRIBUTING.md`, guides, changelogs, and related
+text files. `extractor.py` controls this selection in `_is_relevant_file()` and
+adds the resulting text chunks to the Chroma store.
+
+The debate supports two retrieval schedules. Set `retriever_mode` in
+`main_debate()` in `debate_manager.py` to one of the following values:
+
+- `continuous` is the default. Both opening statements retrieve repository
+  context, and each rebuttal retrieves fresh context.
+- `opening_only` retrieves context only for the affirmative and negative
+  opening statements.
+
+To test alternative RAG prompt roles, edit the debate and retrieval-header
+templates in `Utils/Config.py`. `Utils/Nodes.py` controls how the current
+prompt is used as a similarity-search query and when retrieved chunks are
+added to a debater prompt.
+
+For a guided-retrieval condition, create textual documents containing these
+signals, then add them to the vector store in `extractor.py`:
+
+- organizational and technical standards or constraints, such as material from
+  `CONTRIBUTING.md`;
+- cultural practices, including documentation activity and work distribution;
+- individual contributor experience inferred from available profile metadata;
+- project age and an approximate project type inferred from its structure or
+  documentation.
+
+The packaged extractor does not generate these metadata snippets automatically.
+
 ## What The Pipeline Does
 
 The RAG workflow has two phases:
