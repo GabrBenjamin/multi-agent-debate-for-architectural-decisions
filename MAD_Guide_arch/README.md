@@ -39,6 +39,16 @@ pip install langchain-together
 $env:OPENAI_API_KEY="your-key"
 ```
 
+On Linux and macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r Requirements.txt
+python3 -m pip install langchain-together
+export OPENAI_API_KEY="your-key"
+```
+
 `langchain-together` is imported by `Utils/Agents.py` but is not listed in
 `Requirements.txt`, so it must currently be installed separately.
 
@@ -47,6 +57,8 @@ $env:OPENAI_API_KEY="your-key"
 ```powershell
 python Run_all.py
 ```
+
+On Linux and macOS, run `python3 Run_all.py`.
 
 The script reads `adrs_final_sample_58.csv`. It expects
 `context_considered_drivers` and `other_sections`, then writes

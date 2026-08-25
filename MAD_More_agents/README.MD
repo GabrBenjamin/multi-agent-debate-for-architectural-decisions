@@ -38,6 +38,12 @@ debate modules, then provide an API key before running either entry point:
 $env:OPENAI_API_KEY="your-key"
 ```
 
+On Linux and macOS:
+
+```bash
+export OPENAI_API_KEY="your-key"
+```
+
 ## Run The Batch Pipeline
 
 From this directory:
@@ -45,6 +51,8 @@ From this directory:
 ```powershell
 python Run_all.py
 ```
+
+On Linux and macOS, run `python3 Run_all.py`.
 
 The script searches for `sample_with_all_three_extract.csv` in this directory,
 then in the repository's shared dataset location, `MAD_ATAM/`. This is the
@@ -69,5 +77,7 @@ same shared input used by the regular and ATAM batch experiments. It requires
 ```powershell
 python Main.py
 ```
+
+On Linux and macOS, run `python3 Main.py`.
 
 `Main.py` and `Run_all.py` both use `gpt-4o` through `ChatOpenAI`.

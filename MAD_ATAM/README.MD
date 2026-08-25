@@ -32,11 +32,23 @@ python -m venv .venv
 pip install -r Requirements.txt
 ```
 
+On Linux and macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r Requirements.txt
+```
+
 `Run_all.py` currently uses `gpt-4o` for the debate agents, but its call that
 loads `OPENAI_API_KEY` is commented out. Set the key before running it:
 
 ```powershell
 $env:OPENAI_API_KEY="your-key"
+```
+
+```bash
+export OPENAI_API_KEY="your-key"
 ```
 
 The ATAM preparation uses a locally configured model client. Configure the
@@ -50,11 +62,15 @@ Run one hard-coded example:
 python Main.py
 ```
 
+On Linux and macOS, run `python3 Main.py`.
+
 Run the batch experiment:
 
 ```powershell
 python Run_all.py
 ```
+
+On Linux and macOS, run `python3 Run_all.py`.
 
 The batch script reads `sample_with_all_three_extract.csv`. It requires
 `context_considered_drivers` and uses `other_sections` as the human reference

@@ -38,6 +38,12 @@ For PowerShell:
 $env:OPENAI_API_KEY="your-key"
 ```
 
+For Linux and macOS shells:
+
+```bash
+export OPENAI_API_KEY="your-key"
+```
+
 Batch scripts use a local `Env.py` or `Utils/Env.py` helper. It preserves an
 existing environment value or asks for the key at startup.
 
@@ -65,10 +71,23 @@ python -m venv .venv
 pip install -r Requirements.txt
 ```
 
+On Linux and macOS:
+
+```bash
+cd MAD_Regular+roles
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r Requirements.txt
+```
+
 - Most batch scripts use OpenAI models and require `OPENAI_API_KEY`:
 
 ```powershell
 $env:OPENAI_API_KEY="your-key"
+```
+
+```bash
+export OPENAI_API_KEY="your-key"
 ```
 
 Some single-run scripts instead assume a locally reachable Ollama instance or

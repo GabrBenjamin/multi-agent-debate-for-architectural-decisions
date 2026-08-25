@@ -117,10 +117,21 @@ application source files.
 
 ## Setup
 
-Install the dependencies in this directory:
+On Windows PowerShell, create an environment and install the dependencies in
+this directory:
 
 ```powershell
-pip install -r requirements.txt
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+On Linux and macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 ```
 
 The workflow requires an OpenAI API key for `text-embedding-3-large` and
@@ -129,6 +140,10 @@ input data.
 
 ```powershell
 $env:OPENAI_API_KEY="your-key"
+```
+
+```bash
+export OPENAI_API_KEY="your-key"
 ```
 
 ## Run The RAG Workflow
@@ -143,6 +158,8 @@ does not initialize the retriever state required by the RAG graph.
 python test_repos.py
 ```
 
+On Linux and macOS, run `python3 test_repos.py`.
+
 This checks a sample of pending repositories in `main_dataset.db` with
 `git ls-remote`.
 
@@ -156,6 +173,8 @@ database, run:
 python extractor_ensambler.py --mode extract
 ```
 
+On Linux and macOS, run `python3 extractor_ensambler.py --mode extract`.
+
 This clones the eligible repositories, creates the vector stores, and marks
 successful records with `extraction_status = "success"`.
 
@@ -167,6 +186,8 @@ After vector-store extraction succeeds, run:
 python extractor_ensambler.py --mode run_mad
 ```
 
+On Linux and macOS, run `python3 extractor_ensambler.py --mode run_mad`.
+
 This selects only successful records that do not yet have a saved message
 history, then writes the RAG debate output back to the progress database. To
 perform both phases in order, run:
@@ -174,6 +195,8 @@ perform both phases in order, run:
 ```powershell
 python extractor_ensambler.py --mode all
 ```
+
+On Linux and macOS, run `python3 extractor_ensambler.py --mode all`.
 
 Use `--workers <count>` to choose a worker count. The defaults are 10 workers
 for extraction and 1 worker for debates.

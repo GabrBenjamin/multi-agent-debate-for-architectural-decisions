@@ -32,6 +32,15 @@ pip install -r Requirements.txt
 $env:OPENAI_API_KEY="your-key"
 ```
 
+On Linux and macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r Requirements.txt
+export OPENAI_API_KEY="your-key"
+```
+
 ## Input
 
 All scripts use `all_three_extract.csv`, included in this directory. They
@@ -47,6 +56,14 @@ next to that input file.
 python GPT.py
 python cot.py
 python Few_shot.py
+```
+
+On Linux and macOS:
+
+```bash
+python3 GPT.py
+python3 cot.py
+python3 Few_shot.py
 ```
 
 The few-shot script uses three randomly chosen examples per target record with

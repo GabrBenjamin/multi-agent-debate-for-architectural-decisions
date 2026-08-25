@@ -49,11 +49,25 @@ $env:OPENAI_API_KEY="your-key"
 python Grouping.py
 ```
 
+On Linux and macOS:
+
+```bash
+export OPENAI_API_KEY="your-key"
+python3 Grouping.py
+```
+
 Then run the analyses:
 
 ```powershell
 python Group_analysis.py
 python Drivers_options_analysis.py
+```
+
+On Linux and macOS:
+
+```bash
+python3 Group_analysis.py
+python3 Drivers_options_analysis.py
 ```
 
 ## Generated Files
