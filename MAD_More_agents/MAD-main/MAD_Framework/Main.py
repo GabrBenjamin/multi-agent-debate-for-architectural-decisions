@@ -44,8 +44,8 @@ def initialize_agents(config):
         name="ThirdPart",
         role="debater",
         llm_name="gpt-4o",
-        stance="neutral",
-        description="Offer new point of view."
+        stance="Challenger",
+        description="Challenges assumptions and introduces a distinct perspective."
     )
 
     # Create moderator and judge with valid names

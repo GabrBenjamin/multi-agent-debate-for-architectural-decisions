@@ -8,8 +8,9 @@ answers for later comparison.
 
 Both runners loop through `all_three_extract.csv` and call `gpt-4o` once per
 ADR. `cot.py` adds a reasoning instruction to the decision prompt. `Few_shot.py`
-adds three examples selected using seed `42`. Each output retains the source ADR
-fields beside the generated decision for comparison with the human decision.
+adds three examples selected using seed `42`, using the complete
+`original_content` of other ADRs. Each output retains the source ADR fields
+beside the generated decision for comparison with the human decision.
 
 ## Scripts
 
@@ -34,7 +35,8 @@ $env:OPENAI_API_KEY="your-key"
 
 Both scripts use `all_three_extract.csv`, included in this directory. They
 expect `context_considered_drivers`; `other_sections` is optional and is copied
-to the results as the human decision.
+to the results as the human decision. `Few_shot.py` also requires
+`original_content` for its full-ADR examples.
 
 If only an Excel version of the input is found, the scripts convert it to CSV
 next to that input file.
@@ -48,4 +50,5 @@ python Few_shot.py
 
 The few-shot script uses three randomly chosen examples per target record with
 a fixed random seed of `42`, so its prompt selection is reproducible for an
-unchanged input CSV.
+unchanged input CSV. It excludes the target ADR and duplicate copies of that
+ADR from its example pool.

@@ -75,8 +75,8 @@ associated with each ADR. Startup reads this database even when
 `main_dataset.db` already contains previous extraction or debate results.
 
 `build_adr_tracking_db.py` documents how the compact database is derived. It
-reads a local `adr_data.db` source database and retains only the five tracking
-fields used by this workflow.
+reads a local `adr_data.db` source database and retains only the ADR tracking
+fields and timestamp used by this workflow.
 
 The extractor works three commits before that resolved commit. It selects
 documentation-focused files, including ADRs, Markdown documentation, guides,

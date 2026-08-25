@@ -18,7 +18,7 @@ def main() -> None:
     with sqlite3.connect(f"file:{SOURCE_DB}?mode=ro", uri=True) as source:
         rows = source.execute(
             """
-            SELECT adr_id, adr_name, hash, points_to_adr_id, is_oldest
+            SELECT adr_id, adr_name, hash, points_to_adr_id, is_oldest, timestamp
             FROM adr_tracking_info
             """
         )
@@ -31,12 +31,13 @@ def main() -> None:
                     adr_name TEXT NOT NULL,
                     hash TEXT NOT NULL,
                     points_to_adr_id TEXT,
-                    is_oldest TEXT
+                    is_oldest TEXT,
+                    timestamp DATETIME
                 )
                 """
             )
             target.executemany(
-                "INSERT INTO adr_tracking_info VALUES (?, ?, ?, ?, ?)", rows,
+                "INSERT INTO adr_tracking_info VALUES (?, ?, ?, ?, ?, ?)", rows,
             )
 
     print(f"Created {TARGET_DB.name}")

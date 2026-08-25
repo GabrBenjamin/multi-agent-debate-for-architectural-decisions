@@ -1,8 +1,9 @@
 # Multi-Agent Debate Framework
 
-This experiment extends the regular debate with a fifth participant: a neutral
-third debater. It is located below `MAD_More_agents/MAD-main/` and has its own
-copy of the debate framework.
+This experiment extends the regular debate with a fifth participant: a third
+debater that challenges assumptions and introduces a distinct perspective. It
+is located below `MAD_More_agents/MAD-main/` and has its own copy of the debate
+framework.
 
 ## Pipeline
 
@@ -14,8 +15,9 @@ The batch output preserves the full debate transcript.
 
 For every ADR, `Run_all.py` creates `AffirmativeSide`, `NegativeSide`, and
 `ThirdPart` with `gpt-4o`. The first two argue opposing positions and the third
-adds a neutral response. `Moderator` evaluates the exchange; `Judge` supplies
-the final answer. `Utils/State_graph.py` coordinates the messages with LangGraph.
+challenges their assumptions or contributes a distinct perspective. `Moderator`
+evaluates the exchange; `Judge` supplies the final answer.
+`Utils/State_graph.py` coordinates the messages with LangGraph.
 
 ## Main Files
 
@@ -56,7 +58,7 @@ same shared input used by the regular and ATAM batch experiments. It requires
 | `supported_side` | Side selected by the workflow. |
 | `debate_answer` | Final model decision. |
 | `reason` | Explanation returned by the workflow. |
-| `third_answ` | Neutral third debater's answer. |
+| `third_answ` | Third debater's challenger perspective. |
 | `message_history` | Complete five-agent transcript. |
 
 ## Single Example
