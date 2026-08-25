@@ -18,7 +18,7 @@ repository documentation in a vector store and saves progress in SQLite.
 | `MAD_Guide_arch/` | Debate pipeline that turns debate output into a structured decision model and scores the options. |
 | `MAD_More_agents/MAD-main/MAD_Framework/` | Five-agent variant with an additional neutral participant. |
 | `MAD_RAG/` | Repository-aware retrieval-augmented debate experiment. |
-| `Single_Agent/` | Chain-of-thought and few-shot, non-debate baselines. |
+| `Single_Agent/` | Plain GPT, chain-of-thought, and few-shot non-debate baselines. |
 | `Post_hoc/` | Grouping, comparison, and statistical analysis scripts for generated results. |
 
 Each experiment has its own dependency and runtime requirements. There is no
