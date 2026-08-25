@@ -1,20 +1,22 @@
 # Single-Agent Baselines
 
 This directory contains non-debate baselines for the architectural decision
-task. Both scripts call `gpt-4o` once per ADR record and write a CSV of model
+task. Each script calls `gpt-4o` once per ADR record and writes a CSV of model
 answers for later comparison.
 
 ## How It Works
 
-Both runners loop through `all_three_extract.csv` and call `gpt-4o` once per
-ADR. `cot.py` adds a reasoning instruction to the decision prompt. `Few_shot.py`
-adds three examples selected using seed `42`. Each output retains the source ADR
-fields beside the generated decision for comparison with the human decision.
+All runners loop through `all_three_extract.csv` and call `gpt-4o` once per
+ADR. `GPT.py` uses the base decision prompt. `cot.py` adds a reasoning
+instruction to that prompt. `Few_shot.py` adds three examples selected using
+seed `42`. Each output retains the source ADR fields beside the generated
+decision for comparison with the human decision.
 
 ## Scripts
 
 | File | Method | Output |
 | --- | --- | --- |
+| `GPT.py` | Plain `gpt-4o` base prompt. | `gpt_BIG.csv` |
 | `cot.py` | Adds a chain-of-thought instruction to the base decision prompt. | `gpt_BIG_cot.csv` |
 | `Few_shot.py` | Adds randomly selected ADR examples to each decision prompt. | `gpt_BIG_fewshot.csv` |
 
@@ -32,7 +34,7 @@ $env:OPENAI_API_KEY="your-key"
 
 ## Input
 
-Both scripts use `all_three_extract.csv`, included in this directory. They
+All scripts use `all_three_extract.csv`, included in this directory. They
 expect `context_considered_drivers`; `other_sections` is optional and is copied
 to the results as the human decision.
 
@@ -42,6 +44,7 @@ next to that input file.
 ## Run
 
 ```powershell
+python GPT.py
 python cot.py
 python Few_shot.py
 ```
