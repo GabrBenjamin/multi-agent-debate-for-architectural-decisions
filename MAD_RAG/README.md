@@ -110,7 +110,9 @@ associated with each ADR. Startup reads this database even when
 reads a local `adr_data.db` source database and retains only the ADR tracking
 fields and timestamp used by this workflow.
 
-The extractor works three commits before that resolved commit. It selects
+The extractor works three commits before that resolved commit. This offset was
+chosen after exploratory runs at smaller offsets; see
+[Commit-Offset Diagnostics](#commit-offset-diagnostics). It selects
 documentation-focused files, including ADRs, Markdown documentation, guides,
 changelogs, and related text files. It does not currently index arbitrary
 application source files.
@@ -216,3 +218,26 @@ single CSV file:
 
 `Run_all.py` can write `MAD_rag_results.csv`, and `Comparison.py` can write
 `MAD_rag_results_with_comparisons.csv`.
+
+
+## Commit-Offset Diagnostics
+
+The three-commit offset is a safeguard against retrieving the ADR itself or
+artifacts that already encode the human decision. Before adopting it, the
+pipeline was run with retrieval snapshots taken 0, 1, and 3 commits before the
+earliest ADR commit, under both retrieval strategies (Free RAG, labeled
+`undirected` in the pipeline, and Guided RAG, labeled `directed`). These runs
+and their analysis are in `commit_offset_diagnostics/`:
+
+| File | Contents |
+| --- | --- |
+| `commit_offset_diagnostics/commit_offset_diagnostics.db` | One table per run (`offset0_directed`, `offset0_undirected`, `offset1_directed`, `offset1_undirected`, `offset3_directed`, `offset3_undirected`) with the same schema as the `progress` table, including the full debate transcript and the retrieved repository context for every completed ADR. |
+| `commit_offset_diagnostics/summary/<run>.csv` | One row per ADR with the offset, number of files retrieved, debate answer, and leakage flags. |
+| `commit_offset_diagnostics/leak_check.py` | Recomputes the leakage counts from the database and can export each transcript as a plain-text file. |
+| `commit_offset_diagnostics/README.md` | Description of the runs, the leakage check, the resulting counts, and worked examples of leaked decisions at each offset. |
+
+In short, at offset 0 the retrieved context contained the ADR's own decision
+outcome for most ADRs (63% under Guided RAG, 87% under Free RAG), at offset 1
+for roughly one ADR in nine, and at offset 3 for about one in sixteen. The
+diagnostics README documents the method behind these counts and their
+limitations.
