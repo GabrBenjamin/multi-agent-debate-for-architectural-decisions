@@ -227,17 +227,15 @@ artifacts that already encode the human decision. Before adopting it, the
 pipeline was run with retrieval snapshots taken 0, 1, and 3 commits before the
 earliest ADR commit, under both retrieval strategies (Free RAG, labeled
 `undirected` in the pipeline, and Guided RAG, labeled `directed`). These runs
-and their analysis are in `commit_offset_diagnostics/`:
+are in `commit_offset_diagnostics/`:
 
 | File | Contents |
 | --- | --- |
 | `commit_offset_diagnostics/commit_offset_diagnostics.db` | One table per run (`offset0_directed`, `offset0_undirected`, `offset1_directed`, `offset1_undirected`, `offset3_directed`, `offset3_undirected`) with the same schema as the `progress` table, including the full debate transcript and the retrieved repository context for every completed ADR. |
-| `commit_offset_diagnostics/summary/<run>.csv` | One row per ADR with the offset, number of files retrieved, debate answer, and leakage flags. |
-| `commit_offset_diagnostics/leak_check.py` | Recomputes the leakage counts from the database and can export each transcript as a plain-text file. |
-| `commit_offset_diagnostics/README.md` | Description of the runs, the leakage check, the resulting counts, and worked examples of leaked decisions at each offset. |
+| `commit_offset_diagnostics/summary/<run>.csv` | One row per ADR with the offset, number of files retrieved, debate answer, and flags. |
+| `commit_offset_diagnostics/leak_check.py` | Flags the debates in which the ADR's own outcome text was retrieved and can export each transcript as a plain-text file. |
+| `commit_offset_diagnostics/README.md` | Description of the runs and worked examples of leaked decisions at each offset. |
 
-In short, at offset 0 the retrieved context contained the ADR's own decision
-outcome for most ADRs (63% under Guided RAG, 87% under Free RAG), at offset 1
-for roughly one ADR in nine, and at offset 3 for about one in sixteen. The
-diagnostics README documents the method behind these counts and their
-limitations.
+The diagnostics README explains how leakage shows up in the transcripts and
+walks through examples at each offset, including a case where the decision is
+revealed by related repository content rather than by the ADR itself.
