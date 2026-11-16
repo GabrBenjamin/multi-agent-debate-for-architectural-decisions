@@ -81,4 +81,88 @@ the decision was taken or implemented before the ADR was recorded.
 
 `leak_check.py` helps locate the explicit form: it flags the debates in which a verbatim
 slice of the ADR's withheld *Decision Outcome* section appears in the trace, which can
-only happen through repository retrieval. It
+only happen through repository retrieval. It is a pointer to traces worth reading, not a
+measure of how much leakage there is, since it cannot detect the implicit form. The
+diagnostics were assessed by manually inspecting the retrieved content and the debate
+traces (paper, Sections 3.4 and 6). The examples below illustrate what that inspection
+found at each offset.
+
+```
+python leak_check.py commit_offset_diagnostics.db offset0_directed --examples 5
+```
+
+## Examples
+
+**Offset 0 (`offset0_undirected`, `55raidennetwork_raidenservices / 001-update-pfs-message.md`).**
+The retrieved context handed to the agents is the ADR itself, including its outcome:
+
+> Relevant information extracted from the repository:
+> ## Considered Options
+> 1. A solution where each participant broadcasts the signed, unblinded balance proofs […]
+> 2. A solution where the message contains the capacities of both channel sides […]
+> ## Decision Outcome
+> Chosen option: "Option 2", because it allows for more privacy while offering only smaller safe capacities in the worst case. […]
+
+Debate answer: *"Option 2: Broadcasting Aggregate Capacity Statements is the recommended approach […]"*.
+
+**Offset 0 (`offset0_directed`, `284bbc_digitalpapereditfirebase / 2019-05-09-modular-architecture.md`).**
+An agent argues directly from the leaked outcome:
+
+> ### Decision Outcome
+> The decision outcome from the repository indicates that Option 4 was chosen after further consideration. Initially, Option 3 was preferred for its uniform approach […]
+
+Debate answer: *"Option 4 is the best proposed solution […]"*.
+
+**Offset 0 (`offset0_directed`, `193hamletio_architecturaldecisionlog / 0002-layer-deployments.md`).**
+The judge's verdict is justified by the leaked outcome:
+
+> {"Whether there is a preference": "Yes", "Supported Side": "Negative", "Reason": "The negative side provides a clear alignment with the decision outcome extracted from the repository, which indicates that Option 1 was chosen as the best solution. […]"}
+
+**Offset 1, explicit leakage (`offset1_directed`, `129digiraticouk_bfidiscovery / 0004-universal-viewer-customisations.md`).**
+One commit before the ADR commit, the retrieved context still contains the full decision:
+
+> ## Considered Options
+> * Submodule the examples repository
+> * Build components of UV in our solution […]
+> ## Decision Outcome
+> Chosen option: "Submodule the example repository", because it will keep the application largely agnostic of the viewers […]
+
+Debate answer: *"Submodule the Examples Repository is the best option […]"*.
+
+**Offset 1, implicit leakage (`offset1_undirected`, `89Sylius_Sylius / 2020_03_03_feature_coverage_in_api.md`).**
+The ADR's outcome is "Using Behat for the feature coverage". The ADR file is not in the
+snapshot and its text is not retrieved, so `leak_check.py` does not flag this case.
+However, a related decision record committed earlier is retrieved, and it already
+presupposes the outcome:
+
+> # API - Coverage
+> […] New Sylius API (based on API Platform), should cover in 100% business value provided in Admin panel (and already covered by `@ui` Behat scenarios). […]
+> ### Decision and reasoning
+> For the beginning, we focus on implementing only features already covered with Behat UI scenarios. In the future, it would result in bigger reliability of Behat API tests […]
+
+Debate answer: *"The decision to initially implement features covered by Behat UI scenarios is the most suitable option […]"*.
+
+Here the decision is revealed by neighbouring repository content rather than by the ADR
+itself.
+
+**Offset 3, residual case (`offset3_directed`, `127digiraticouk_bfidiscovery / 0003-choice-of-technology-and-framework.md`).**
+Even three commits back, an earlier draft of the decision is present in the snapshot:
+
+> Relevant information extracted from the repository:
+> * Kotlin, Spring  * TypeScript, Express  * Python, Django
+> ## Decision Outcome
+> Chosen option: Kotlin/Spring, because our vast experience with the JVM and Spring will make this a straight-forward project. […]
+
+The wording differs from the final ADR ("Kotlin is selected as the solution owing to
+Digirati's vast experience with the JVM…"), i.e. the decision was drafted in the
+repository before the commit identified as introducing the ADR. This is the kind of case
+that motivates treating the three-commit margin as a conservative heuristic rather than
+a guarantee (Section 6, internal validity).
+
+## Provenance
+
+The tables were exported from the original run databases (`main_dataset_offset0.db`,
+`main_dataset_undirected.db`, `main_dataset_combined.db`), keeping only rows with
+`status = 'debate_completed'`. In `main_dataset_combined.db` the tables named
+`*_offset0` hold runs with `commit_offset = 1`; they are exported here under their
+actual offset (`offset1_*`).
